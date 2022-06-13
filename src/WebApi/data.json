@@ -1,0 +1,32 @@
+{
+  "carRentEntity": [
+    {
+      "id": 0,
+      "rentStart": "2022-06-13T14:26:14.82Z",
+      "rentEnd": "2022-06-13T14:26:35.737Z",
+      "meterStart": 0,
+      "meterEnd": 0,
+      "customerId": {
+        "idNumber": "idnumber1234",
+        "idType": 0
+      },
+      "carCategory": 0,
+      "licenceNumber": "pdx205",
+      "meter": 0
+    },
+    {
+      "id": 1,
+      "rentStart": "2022-06-13T14:26:14.82Z",
+      "rentEnd": "2022-06-13T14:26:35.737Z",
+      "meterStart": 100,
+      "meterEnd": 101,
+      "customerId": {
+        "idNumber": "idnumber1234",
+        "idType": 1
+      },
+      "carCategory": 2,
+      "licenceNumber": "pdx205",
+      "meter": 0
+    }
+  ]
+}
