@@ -1,3 +1,4 @@
+using Application.Exceptions;
 using Application.Interfaces;
 using CarRenting.Domain.Entities;
 using CarRenting.Domain.Enums;
@@ -17,6 +18,11 @@ public class CarRentRepository : ICarRentRepository
         int meterReading, string idNumber, IdType idType)
     {
         var collection = GetCollection<CarRentEntity>();
+        var rented = collection.Find(car => car.LicenceNumber == licenceNumber && car.RentEnd == null).FirstOrDefault();
+        if (rented != null)
+        {
+            throw new CarUnavailableException("car is already rented");
+        }
         var bookingNumber = (int)collection.GetNextIdValue();
         var carRent = new CarRentEntity
         {
@@ -36,6 +42,11 @@ public class CarRentRepository : ICarRentRepository
         //handle when car not found
         var collection = GetCollection<CarRentEntity>();
         var car = collection.Find(c => c.Id == bookingNumber).FirstOrDefault();
+        if (car == null)
+        {
+            throw new NotFoundException("booking number not found");
+        }
+
         car.MeterEnd = meterEnd;
         car.RentEnd = returnDate;
         await collection.UpdateOneAsync(r => r.Id == bookingNumber, car);

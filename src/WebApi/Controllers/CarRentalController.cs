@@ -1,4 +1,5 @@
 using Application.Contracts;
+using Application.Exceptions;
 using Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,27 +19,42 @@ public class CarRentalController : ControllerBase
     }
 
     [HttpPost("Rent")]
-    public async Task<RentCarResponse> RentCar(RentCarRequest request)
+    public async Task<IActionResult> RentCar(RentCarRequest request)
     {
         //make it idempotent
         //Handle errors
-        var bookingNumber = await _carRentalService.RentCar(request.LicencePlate, request.CarCategory,
-            request.MeterReading, request.Customer.IdentityNumber, request.Customer.IdType, request.RentStart);
-        return new RentCarResponse
+        //log errors
+        try
         {
-            BookingNumber = bookingNumber
-        };
+            var bookingNumber = await _carRentalService.RentCar(request.LicencePlate, request.CarCategory,
+                request.MeterReading, request.Customer.IdentityNumber, request.Customer.IdType, request.RentStart);
+            return Ok(new RentCarResponse
+            {
+                BookingNumber = bookingNumber
+            });
+        }
+        catch (CarUnavailableException e)
+        {
+            return BadRequest(e.Message);
+        }
+        
     }
 
     [HttpPost("Return")]
-    public async Task<ReturnCarResponse> ReturnCar(ReturnCarRequest carRequest)
+    public async Task<IActionResult> ReturnCar(ReturnCarRequest carRequest)
     {
-        //make it idempotent
-        //Handle errors
-        var cost = await _carRentalService.ReturnCar(carRequest.BookingNumber, carRequest.ReturnDate, carRequest.MeterReading);
-        return new ReturnCarResponse
+        try
         {
-            Cost = cost
-        };
+            var cost = await _carRentalService.ReturnCar(carRequest.BookingNumber, carRequest.ReturnDate,
+                carRequest.MeterReading);
+            return Ok(new ReturnCarResponse
+            {
+                Cost = cost
+            });
+        }
+        catch (NotFoundException e)
+        {
+            return NotFound(e.Message);
+        }
     }
 }
